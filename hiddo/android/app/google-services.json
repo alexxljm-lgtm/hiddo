@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "149916352842",
+    "project_id": "hiddo-1f412",
+    "storage_bucket": "hiddo-1f412.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149916352842:android:2b3cb518fcc49d3dc4c1b3",
+        "android_client_info": {
+          "package_name": "com.example.hiddo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA453UtsmGdSw0H5YonTTwkzts_9Dvv8co"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
