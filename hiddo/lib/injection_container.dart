@@ -13,6 +13,8 @@ import 'package:hiddo/features/auth/data/datasources/auth_firestore_datasource_i
 import 'package:hiddo/features/game/data/datasources/game_firestore_datasource.dart';
 import 'package:hiddo/features/game/data/datasources/game_firestore_datasource_impl.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:hiddo/core/services/camera_service.dart';
+
 
 final gameFirestoreDatasourceProvider =
     Provider<GameFirestoreDatasource>((ref) {
@@ -21,6 +23,10 @@ final gameFirestoreDatasourceProvider =
 
   return GameFirestoreDatasourceImpl(firestore);
 
+});
+
+final cameraServiceProvider = Provider<CameraService>((ref) {
+  return CameraService();
 });
 
 final storageProvider = Provider<FirebaseStorage>((ref) {
