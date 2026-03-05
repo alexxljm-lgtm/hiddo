@@ -12,5 +12,10 @@ abstract class GameFirestoreDatasource {
   String userId,
   List<String> items,
   );
-
+  Future<void> markItemFound({
+    required String gameId,
+    required String userId,
+    required String item,
+    required String photoUrl,
+  });
 }

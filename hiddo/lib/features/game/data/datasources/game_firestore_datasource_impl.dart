@@ -67,4 +67,20 @@ Future<void> submitList(
   });
 
 }
+
+  @override
+Future<void> markItemFound({
+  required String gameId,
+  required String userId,
+  required String item,
+  required String photoUrl,
+}) async {
+
+  final doc = firestore.collection('games').doc(gameId);
+
+  await doc.update({
+    'progress.$userId.$item': photoUrl
+  });
+
+}
 }
