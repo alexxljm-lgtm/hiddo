@@ -9,6 +9,17 @@ import 'features/auth/domain/usecases/sign_in_anonymously.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hiddo/features/auth/data/datasources/auth_firestore_datasource.dart';
 import 'package:hiddo/features/auth/data/datasources/auth_firestore_datasource_impl.dart';
+import 'package:hiddo/features/game/data/datasources/game_firestore_datasource.dart';
+import 'package:hiddo/features/game/data/datasources/game_firestore_datasource_impl.dart';
+
+final gameFirestoreDatasourceProvider =
+    Provider<GameFirestoreDatasource>((ref) {
+
+  final firestore = ref.read(firestoreProvider);
+
+  return GameFirestoreDatasourceImpl(firestore);
+
+});
 
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
