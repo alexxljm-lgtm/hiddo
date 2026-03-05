@@ -38,4 +38,16 @@ class GameFirestoreDatasourceImpl implements GameFirestoreDatasource {
     });
 
   }
+
+  @override
+  Future<void> startGame(String gameId, Map<String, String> assignments) async {
+
+  final doc = firestore.collection('games').doc(gameId);
+
+  await doc.update({
+    'assignments': assignments,
+    'status': 'playing'
+  });
+
+}
 }
