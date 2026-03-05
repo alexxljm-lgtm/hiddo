@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:hiddo/features/game/data/datasources/photo_storage_datasource.dart';
+import 'package:hiddo/features/game/data/datasources/photo_storage_datasource_impl.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -11,6 +12,7 @@ import 'package:hiddo/features/auth/data/datasources/auth_firestore_datasource.d
 import 'package:hiddo/features/auth/data/datasources/auth_firestore_datasource_impl.dart';
 import 'package:hiddo/features/game/data/datasources/game_firestore_datasource.dart';
 import 'package:hiddo/features/game/data/datasources/game_firestore_datasource_impl.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 final gameFirestoreDatasourceProvider =
     Provider<GameFirestoreDatasource>((ref) {
@@ -21,8 +23,20 @@ final gameFirestoreDatasourceProvider =
 
 });
 
+final storageProvider = Provider<FirebaseStorage>((ref) {
+  return FirebaseStorage.instance;
+});
+
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
+});
+
+final photoStorageDatasourceProvider =
+    Provider<PhotoStorageDatasource>((ref) {
+
+  final storage = ref.read(storageProvider);
+
+  return PhotoStorageDatasourceImpl(storage);
 });
 
 final authFirestoreDatasourceProvider = Provider<AuthFirestoreDatasource>((ref) {
