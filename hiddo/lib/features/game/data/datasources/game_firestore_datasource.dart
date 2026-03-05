@@ -6,4 +6,11 @@ abstract class GameFirestoreDatasource {
 
   Future<void> joinGame(String gameId, String userId);
   Future<void> startGame(String gameId, Map<String, String> assignments);
+
+  Future<void> submitList(
+  String gameId,
+  String userId,
+  List<String> items,
+  );
+
 }

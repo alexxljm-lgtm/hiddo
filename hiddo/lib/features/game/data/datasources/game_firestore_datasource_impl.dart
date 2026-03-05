@@ -49,5 +49,22 @@ class GameFirestoreDatasourceImpl implements GameFirestoreDatasource {
     'status': 'playing'
   });
 
+  
+
+}
+
+ @override
+Future<void> submitList(
+  String gameId,
+  String userId,
+  List<String> items,
+) async {
+
+  final doc = firestore.collection('games').doc(gameId);
+
+  await doc.update({
+    'lists.$userId': items
+  });
+
 }
 }
