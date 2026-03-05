@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hiddo/features/game/data/datasources/photo_storage_datasource.dart';
 import 'package:hiddo/features/game/data/datasources/photo_storage_datasource_impl.dart';
+import 'package:hiddo/features/game/domain/entities/game.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -23,6 +24,11 @@ final gameFirestoreDatasourceProvider =
 
   return GameFirestoreDatasourceImpl(firestore);
 
+});
+
+final gameStreamProvider = StreamProvider.family<Game, String>((ref, gameId) {
+  final datasource = ref.read(gameFirestoreDatasourceProvider);
+  return datasource.watchGame(gameId);
 });
 
 final cameraServiceProvider = Provider<CameraService>((ref) {

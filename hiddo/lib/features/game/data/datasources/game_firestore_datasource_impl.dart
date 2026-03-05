@@ -83,4 +83,14 @@ Future<void> markItemFound({
   });
 
 }
+
+  @override
+Stream<Game> watchGame(String gameId) {
+  final doc = firestore.collection('games').doc(gameId);
+
+  return doc.snapshots().map((snapshot) {
+    final data = snapshot.data()!;
+    return GameModel.fromFirestore(data, snapshot.id);
+  });
+}
 }
