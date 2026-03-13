@@ -10,33 +10,34 @@ class GameFirestoreDatasourceImpl implements GameFirestoreDatasource {
 
   GameFirestoreDatasourceImpl(this.firestore);
 
-  @override
-  Future<Game> createGame(String hostId) async {
+Future<Game> createGame(String userId) async {
 
-    final doc = firestore.collection('games').doc();
+  print("CREATE GAME START");
 
-    final game = GameModel(
-      id: doc.id,
-      players: [hostId],
-      lists: {},
-      assignments: {},
-      status: 'waiting',
-    );
+  final docRef = firestore.collection('games').doc();
 
-    await doc.set(game.toFirestore());
+  final gameModel = GameModel(
+    id: docRef.id,
+    players: [userId],
+    lists: const {},
+    assignments: const {},
+    progress: const {},
+    status: 'waiting',
+  );
 
-    return game;
-  }
+  await docRef.set(gameModel.toFirestore());
+
+  print("GAME CREATED: ${docRef.id}");
+
+  return gameModel;
+}
 
   @override
   Future<void> joinGame(String gameId, String userId) async {
-
-    final doc = firestore.collection('games').doc(gameId);
-
-    await doc.update({
-      'players': FieldValue.arrayUnion([userId])
+    final docRef = firestore.collection('games').doc(gameId);
+    await docRef.update({
+      "players": FieldValue.arrayUnion([userId])
     });
-
   }
 
   @override

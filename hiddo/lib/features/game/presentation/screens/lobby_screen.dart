@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hiddo/injection_container.dart';
 import '../../data/datasources/game_firestore_datasource.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LobbyScreen extends ConsumerWidget {
   const LobbyScreen({super.key});
@@ -10,7 +10,6 @@ class LobbyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final datasource = ref.read(gameFirestoreDatasourceProvider);
-
     final gameIdController = TextEditingController();
 
     return Scaffold(
@@ -21,17 +20,29 @@ class LobbyScreen extends ConsumerWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                // Crear partida
-                final userId = "uid_demo"; // Aquí usarías tu UID real
-                final game = await datasource.createGame(userId);
-                // Mostrar gameId
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("Partida creada"),
-                    content: Text("ID: ${game.id}"),
-                  ),
-                );
+                try {
+                  // Crear usuario anónimo si no hay
+                  User? user = FirebaseAuth.instance.currentUser;
+                  if (user == null) {
+                    final cred = await FirebaseAuth.instance.signInAnonymously();
+                    user = cred.user;
+                  }
+                  final game = await datasource.createGame(user!.uid);
+                  print("Game created: ${game.id}");
+                  // Mostrar gameId
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Partida creada"),
+                      content: Text("ID: ${game.id}"),
+                    ),
+                  );
+                } on FirebaseException catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error al crear partida: ${e.message}")),
+                    
+                  );
+                }
               },
               child: const Text("Crear Partida"),
             ),
@@ -45,14 +56,25 @@ class LobbyScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () async {
-                final userId = "uid_demo"; // Aquí usarías tu UID real
                 final gameId = gameIdController.text.trim();
                 if (gameId.isEmpty) return;
-                await datasource.joinGame(gameId, userId);
-                // Confirmación
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Te uniste a la partida")),
-                );
+
+                try {
+                  User? user = FirebaseAuth.instance.currentUser;
+                  if (user == null) {
+                    final cred = await FirebaseAuth.instance.signInAnonymously();
+                    user = cred.user;
+                  }
+
+                  await datasource.joinGame(gameId, user!.uid);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Te uniste a la partida")),
+                  );
+                } on FirebaseException catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error al unirse: ${e.message}")),
+                  );
+                }
               },
               child: const Text("Unirse a Partida"),
             ),
