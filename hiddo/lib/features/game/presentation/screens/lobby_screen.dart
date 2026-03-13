@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hiddo/features/game/presentation/screens/game_lobby_screen.dart';
 import 'package:hiddo/injection_container.dart';
 import '../../data/datasources/game_firestore_datasource.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,7 +29,15 @@ class LobbyScreen extends ConsumerWidget {
                     user = cred.user;
                   }
                   final game = await datasource.createGame(user!.uid);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GameLobbyScreen(gameId: game.id),
+                    ),
+                  );
                   print("Game created: ${game.id}");
+                  
                   // Mostrar gameId
                   showDialog(
                     context: context,
@@ -67,6 +76,13 @@ class LobbyScreen extends ConsumerWidget {
                   }
 
                   await datasource.joinGame(gameId, user!.uid);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GameLobbyScreen(gameId: gameId),
+                    ),
+                  );
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Te uniste a la partida")),
                   );
