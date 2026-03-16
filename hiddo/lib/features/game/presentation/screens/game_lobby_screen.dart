@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hiddo/features/game/presentation/screens/list_submission_screen.dart';
 import '../providers/game_provider.dart';
 
 class GameLobbyScreen extends ConsumerWidget {
@@ -60,8 +61,17 @@ class GameLobbyScreen extends ConsumerWidget {
 
               ElevatedButton(
                 onPressed: () {
-                  // luego activaremos startGame aquí
-                },
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ListSubmissionScreen(
+                      gameId: gameId,
+                    ),
+                  ),
+                );
+
+              },
                 child: const Text("Start Game"),
               ),
 
