@@ -40,19 +40,23 @@ Future<Game> createGame(String userId) async {
     });
   }
 
-  @override
-  Future<void> startGame(String gameId, Map<String, String> assignments) async {
+    @override
+    Future<void> startGame(String gameId, Map<String, String> assignments) async {
 
-  final doc = firestore.collection('games').doc(gameId);
+      // ignore: avoid_print
+      print("START GAME CALLED");
+      print("GameId: $gameId");
+      print("Assignments: $assignments");
 
-  await doc.update({
-    'assignments': assignments,
-    'status': 'playing'
-  });
+      final doc = firestore.collection('games').doc(gameId);
 
-  
+      await doc.update({
+        'assignments': assignments,
+        'status': 'playing'
+      });
 
-}
+      print("FIRESTORE UPDATED");
+    }
 
  @override
 Future<void> submitList(

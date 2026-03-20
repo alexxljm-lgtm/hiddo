@@ -93,10 +93,14 @@ class LobbyScreen extends ConsumerWidget {
                 }
               },
               child: const Text("Unirse a Partida"),
+              
             ),
+          
+
           ],
         ),
       ),
     );
+    
   }
 }
