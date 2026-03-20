@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:149916352842:android:2b3cb518fcc49d3dc4c1b3',
     messagingSenderId: '149916352842',
     projectId: 'hiddo-1f412',
-    storageBucket: 'hiddo-1f412.firebasestorage.app',
+storageBucket: 'hiddo-1f412.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
