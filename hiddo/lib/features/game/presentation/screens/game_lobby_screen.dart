@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hiddo/features/game/domain/usecases/generate_assignments.dart';
 import 'package:hiddo/features/game/presentation/screens/hunt_screen.dart';
 import 'package:hiddo/features/game/presentation/screens/list_submission_screen.dart';
+import 'package:hiddo/features/game/presentation/screens/results_screen.dart';
 import 'package:hiddo/injection_container.dart';
 import '../providers/game_provider.dart' hide gameStreamProvider;
 
@@ -40,6 +41,17 @@ class _GameLobbyScreenState extends ConsumerState<GameLobbyScreen> {
               );
             });
           }
+
+            if (game.status == "finished") {
+              Future.microtask(() {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ResultsScreen(gameId: game.id),
+                  ),
+                );
+              });
+            }
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -130,7 +142,9 @@ class _GameLobbyScreenState extends ConsumerState<GameLobbyScreen> {
               ],
             ),
           );
+          
         },
+        
       ),
     );
   }

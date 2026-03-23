@@ -10,6 +10,8 @@ class Game {
   final int? durationMinutes;
   final String? startedAt;
   final String? endsAt;
+  final String? winnerId;
+  final String? finishedAt;
 
   Game({
     required this.id,
@@ -20,7 +22,9 @@ class Game {
     required this.status,
     this.durationMinutes,
     this.startedAt,
-    this.endsAt,
+    this.endsAt, 
+    this.winnerId, 
+    this.finishedAt,
   });
 
   @override
@@ -53,6 +57,7 @@ class Game {
     );
 
     final status = data['status'] as String? ?? 'waiting';
+    
 
     return Game(
       id: id,
@@ -64,6 +69,8 @@ class Game {
       durationMinutes: data['durationMinutes'] as int?,
       startedAt: data['startedAt'] as String?,
       endsAt: data['endsAt'] as String?,
+      winnerId: data['winnerId'] as String?,
+      finishedAt: data['finishedAt'] as String?,
     );
   }
 
@@ -77,6 +84,8 @@ class Game {
       'durationMinutes': durationMinutes,
       'startedAt': startedAt,
       'endsAt': endsAt,
+      'winnerId': winnerId,
+      'finishedAt': finishedAt,
     };
   }
 }

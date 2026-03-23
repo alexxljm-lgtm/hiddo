@@ -13,6 +13,8 @@ class GameModel extends Game {
     super.durationMinutes,
     super.startedAt,
     super.endsAt,
+    super.winnerId,
+    super.finishedAt,
   });
 
   factory GameModel.fromFirestore(Map<String, dynamic> data, String id) {
@@ -26,6 +28,8 @@ class GameModel extends Game {
       durationMinutes: data['durationMinutes'] as int?,
       startedAt: data['startedAt'] as String?,
       endsAt: data['endsAt'] as String?,
+      winnerId: data['winnerId'] as String?,
+      finishedAt: data['finishedAt'] as String?,
     );
   }
 
@@ -39,6 +43,8 @@ class GameModel extends Game {
       'durationMinutes': durationMinutes,
       'startedAt': startedAt,
       'endsAt': endsAt,
+      'winnerId': winnerId,
+      'finishedAt': finishedAt,
     };
   }
 
@@ -53,6 +59,8 @@ class GameModel extends Game {
       durationMinutes: game.durationMinutes,
       startedAt: game.startedAt,
       endsAt: game.endsAt,
+      winnerId: game.winnerId,
+      finishedAt: game.finishedAt,
     );
   }
 
@@ -67,6 +75,8 @@ class GameModel extends Game {
       durationMinutes: durationMinutes,
       startedAt: startedAt,
       endsAt: endsAt,
+      winnerId: winnerId,
+      finishedAt: finishedAt,
     );
   }
 }

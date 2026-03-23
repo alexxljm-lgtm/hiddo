@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/game_provider.dart';
 import '../utils/game_ranking.dart';
+
+
 class ResultsScreen extends ConsumerWidget {
   final String gameId;
 
@@ -32,6 +34,9 @@ class ResultsScreen extends ConsumerWidget {
             lists: game.lists,
             progress: game.progress,
           );
+          final winnerId = game.winnerId;
+          final isCurrentUserWinner = winnerId == currentUserId;
+
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -113,6 +118,23 @@ class ResultsScreen extends ConsumerWidget {
                         ),
                       );
                     },
+                  ),
+                ),
+
+                if (winnerId != null)
+                Text(
+                  isCurrentUserWinner ? '¡Has ganado!' : 'Ganador: $winnerId',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else
+                const Text(
+                  'Tiempo terminado',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],

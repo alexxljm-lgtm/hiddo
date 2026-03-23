@@ -48,8 +48,17 @@ class HuntScreen extends ConsumerWidget {
 
           final hasWon = items.isNotEmpty && foundItems.length == items.length;
 
-          if (hasWon) {
-            Future.microtask(() {
+          if (hasWon && game.status != 'finished') {
+            Future.microtask(() async {
+              final datasource = ref.read(gameFirestoreDatasourceProvider);
+
+              await datasource.finishGame(
+                game.id,
+                winnerId: currentUserId,
+              );
+
+              if (!context.mounted) return;
+
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -68,8 +77,14 @@ class HuntScreen extends ConsumerWidget {
               final remaining = getRemainingTime(game.endsAt);
               final isTimeOver = remaining != null && remaining == Duration.zero;
 
-              if (isTimeOver) {
-                Future.microtask(() {
+              if (isTimeOver && game.status != 'finished') {
+                Future.microtask(() async {
+                  final datasource = ref.read(gameFirestoreDatasourceProvider);
+
+                  await datasource.finishGame(game.id);
+
+                  if (!context.mounted) return;
+
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

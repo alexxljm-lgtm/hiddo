@@ -99,4 +99,16 @@ Stream<Game> watchGame(String gameId) {
     return GameModel.fromFirestore(data, snapshot.id);
   });
 }
+@override
+Future<void> finishGame(String gameId, {String? winnerId}) async {
+  final doc = firestore.collection('games').doc(gameId);
+
+  await doc.set({
+    'status': 'finished',
+    'winnerId': winnerId,
+    'finishedAt': DateTime.now().toIso8601String(),
+  }, SetOptions(merge: true));
 }
+
+}
+
