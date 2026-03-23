@@ -5,11 +5,18 @@ import 'package:hiddo/injection_container.dart';
 import '../../data/datasources/game_firestore_datasource.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class LobbyScreen extends ConsumerWidget {
+class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LobbyScreen> createState() => _LobbyScreenState();
+}
+
+class _LobbyScreenState extends ConsumerState<LobbyScreen> {
+  int selectedDurationMinutes = 60;
+
+  @override
+  Widget build(BuildContext context) {
     final datasource = ref.read(gameFirestoreDatasourceProvider);
     final gameIdController = TextEditingController();
 

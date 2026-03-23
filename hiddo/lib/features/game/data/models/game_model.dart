@@ -3,35 +3,32 @@
 import '../../domain/entities/game.dart';
 
 class GameModel extends Game {
-  const GameModel({
+  GameModel({
     required super.id,
     required super.players,
     required super.lists,
     required super.assignments,
     required super.progress,
     required super.status,
+    super.durationMinutes,
+    super.startedAt,
+    super.endsAt,
   });
 
-  // Crear GameModel desde Firestore (map + id)
   factory GameModel.fromFirestore(Map<String, dynamic> data, String id) {
     return GameModel(
       id: id,
       players: List<String>.from(data['players'] ?? []),
-      lists: (data['lists'] as Map<String, dynamic>? ?? {}).map(
-        (key, value) => MapEntry(key, List<String>.from(value)),
-      ),
-      assignments: Map<String, String>.from(data['assignments'] ?? {}),
-      progress: (data['progress'] as Map<String, dynamic>? ?? {}).map(
-        (playerId, map) => MapEntry(
-          playerId,
-          Map<String, String>.from(map as Map<String, dynamic>),
-        ),
-      ),
-      status: data['status'] as String? ?? 'waiting',
+      lists: Map<String, dynamic>.from(data['lists'] ?? {}),
+      assignments: Map<String, dynamic>.from(data['assignments'] ?? {}),
+      progress: Map<String, dynamic>.from(data['progress'] ?? {}),
+      status: data['status'] ?? 'waiting',
+      durationMinutes: data['durationMinutes'] as int?,
+      startedAt: data['startedAt'] as String?,
+      endsAt: data['endsAt'] as String?,
     );
   }
 
-  // Convertir a Map para subir a Firestore
   Map<String, dynamic> toFirestore() {
     return {
       'players': players,
@@ -39,10 +36,12 @@ class GameModel extends Game {
       'assignments': assignments,
       'progress': progress,
       'status': status,
+      'durationMinutes': durationMinutes,
+      'startedAt': startedAt,
+      'endsAt': endsAt,
     };
   }
 
-  // Convertir de GameEntity a GameModel
   factory GameModel.fromEntity(Game game) {
     return GameModel(
       id: game.id,
@@ -51,10 +50,12 @@ class GameModel extends Game {
       assignments: game.assignments,
       progress: game.progress,
       status: game.status,
+      durationMinutes: game.durationMinutes,
+      startedAt: game.startedAt,
+      endsAt: game.endsAt,
     );
   }
 
-  // Convertir a GameEntity
   Game toEntity() {
     return Game(
       id: id,
@@ -63,6 +64,9 @@ class GameModel extends Game {
       assignments: assignments,
       progress: progress,
       status: status,
+      durationMinutes: durationMinutes,
+      startedAt: startedAt,
+      endsAt: endsAt,
     );
   }
 }

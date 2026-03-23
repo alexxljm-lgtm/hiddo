@@ -32,32 +32,33 @@ Future<Game> createGame(String userId) async {
   return gameModel;
 }
 
-  @override
-  Future<void> joinGame(String gameId, String userId) async {
-    final docRef = firestore.collection('games').doc(gameId);
-    await docRef.update({
-      "players": FieldValue.arrayUnion([userId])
-    });
-  }
-
     @override
-    Future<void> startGame(String gameId, Map<String, String> assignments) async {
-
-      // ignore: avoid_print
-      print("START GAME CALLED");
-      print("GameId: $gameId");
-      print("Assignments: $assignments");
-
-      final doc = firestore.collection('games').doc(gameId);
-
-      await doc.update({
-        'assignments': assignments,
-        'status': 'playing'
+    Future<void> joinGame(String gameId, String userId) async {
+      final docRef = firestore.collection('games').doc(gameId);
+      await docRef.update({
+        "players": FieldValue.arrayUnion([userId])
       });
-
-      print("FIRESTORE UPDATED");
     }
 
+@override
+Future<void> startGame(
+  String gameId,
+  Map<String, String> assignments,
+  int durationMinutes,
+) async {
+  final doc = firestore.collection('games').doc(gameId);
+
+  final now = DateTime.now();
+  final endsAt = now.add(Duration(minutes: durationMinutes));
+
+  await doc.set({
+    'assignments': assignments,
+    'status': 'playing',
+    'durationMinutes': durationMinutes,
+    'startedAt': now.toIso8601String(),
+    'endsAt': endsAt.toIso8601String(),
+  }, SetOptions(merge: true));
+}
  @override
 Future<void> submitList(
   String gameId,

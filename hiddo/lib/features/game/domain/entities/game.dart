@@ -1,39 +1,57 @@
 // lib/features/game/domain/entities/game.dart
 
-
 class Game {
-  final String id; // ID de la partida en Firestore
-  final List<String> players; // UIDs de los jugadores
-  final Map<String, List<String>> lists; // listas de cada jugador
-  final Map<String, String> assignments; // asignaciones jugador->jugador
-  final Map<String, Map<String, String>> progress; // progreso jugador->item->photoUrl
-  final String status; // waiting, started, finished
+  final String id;
+  final List<String> players;
+  final Map<String, dynamic> lists;
+  final Map<String, dynamic> assignments;
+  final Map<String, dynamic> progress;
+  final String status;
+  final int? durationMinutes;
+  final String? startedAt;
+  final String? endsAt;
 
-  const Game({
+  Game({
     required this.id,
     required this.players,
     required this.lists,
     required this.assignments,
     required this.progress,
     required this.status,
+    this.durationMinutes,
+    this.startedAt,
+    this.endsAt,
   });
 
   @override
-  List<Object?> get props => [id, players, lists, assignments, progress, status];
+  List<Object?> get props => [
+        id,
+        players,
+        lists,
+        assignments,
+        progress,
+        status,
+        durationMinutes,
+        startedAt,
+        endsAt,
+      ];
 
-  // Convertir de Firestore a Game
   factory Game.fromFirestore(Map<String, dynamic> data, String id) {
     final players = List<String>.from(data['players'] ?? []);
+
     final lists = (data['lists'] as Map<String, dynamic>? ?? {}).map(
       (key, value) => MapEntry(key, List<String>.from(value)),
     );
+
     final assignments = Map<String, String>.from(data['assignments'] ?? {});
+
     final progress = (data['progress'] as Map<String, dynamic>? ?? {}).map(
       (playerId, map) => MapEntry(
         playerId,
         Map<String, String>.from(map as Map<String, dynamic>),
       ),
     );
+
     final status = data['status'] as String? ?? 'waiting';
 
     return Game(
@@ -43,10 +61,12 @@ class Game {
       assignments: assignments,
       progress: progress,
       status: status,
+      durationMinutes: data['durationMinutes'] as int?,
+      startedAt: data['startedAt'] as String?,
+      endsAt: data['endsAt'] as String?,
     );
   }
 
-  // Convertir a Map para subir a Firestore
   Map<String, dynamic> toFirestore() {
     return {
       'players': players,
@@ -54,6 +74,9 @@ class Game {
       'assignments': assignments,
       'progress': progress,
       'status': status,
+      'durationMinutes': durationMinutes,
+      'startedAt': startedAt,
+      'endsAt': endsAt,
     };
   }
 }
