@@ -10,7 +10,7 @@ class GameFirestoreDatasourceImpl implements GameFirestoreDatasource {
 
   GameFirestoreDatasourceImpl(this.firestore);
 
-Future<Game> createGame(String userId) async {
+Future<Game> createGame(String userId, String userName) async {
 
   print("CREATE GAME START");
 
@@ -19,6 +19,7 @@ Future<Game> createGame(String userId) async {
   final gameModel = GameModel(
     id: docRef.id,
     players: [userId],
+    playerNames: {userId: userName},
     lists: const {},
     assignments: const {},
     progress: const {},
@@ -33,10 +34,11 @@ Future<Game> createGame(String userId) async {
 }
 
     @override
-    Future<void> joinGame(String gameId, String userId) async {
+    Future<void> joinGame(String gameId, String userId, String userName) async {
       final docRef = firestore.collection('games').doc(gameId);
       await docRef.update({
-        "players": FieldValue.arrayUnion([userId])
+        "players": FieldValue.arrayUnion([userId]),
+        "playerNames.$userId": userName,
       });
     }
 
@@ -111,4 +113,3 @@ Future<void> finishGame(String gameId, {String? winnerId}) async {
 }
 
 }
-

@@ -68,10 +68,11 @@ class _GameLobbyScreenState extends ConsumerState<GameLobbyScreen> {
                   child: ListView.builder(
                     itemCount: game.players.length,
                     itemBuilder: (context, index) {
-                      final player = game.players[index];
+                      final playerId = game.players[index];
+                      final playerName = game.playerNames[playerId] ?? playerId;
                       return ListTile(
                         leading: const Icon(Icons.person),
-                        title: Text(player),
+                        title: Text(playerName),
                       );
                     },
                   ),

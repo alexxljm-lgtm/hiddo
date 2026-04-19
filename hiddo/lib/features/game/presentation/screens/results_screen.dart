@@ -76,7 +76,9 @@ class ResultsScreen extends ConsumerWidget {
                           return Card(
                             child: ListTile(
                               leading: Text('#${index + 1}'),
-                              title: Text(player.userId),
+                              title: Text(
+                                game.playerNames[player.userId] ?? player.userId,
+                              ),
                               subtitle: Text(
                                 '${player.found}/${player.total} objetos encontrados',
                               ),
@@ -123,7 +125,9 @@ class ResultsScreen extends ConsumerWidget {
 
                 if (winnerId != null)
                 Text(
-                  isCurrentUserWinner ? '¡Has ganado!' : 'Ganador: $winnerId',
+                  isCurrentUserWinner
+                      ? '¡Has ganado!'
+                      : 'Ganador: ${game.playerNames[winnerId] ?? winnerId}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,

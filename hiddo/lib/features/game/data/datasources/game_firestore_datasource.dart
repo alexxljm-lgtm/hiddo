@@ -2,9 +2,9 @@ import '../../domain/entities/game.dart';
 
 abstract class GameFirestoreDatasource {
 
-  Future<Game> createGame(String hostId);
+  Future<Game> createGame(String hostId, String hostName);
 
-  Future<void> joinGame(String gameId, String userId);
+  Future<void> joinGame(String gameId, String userId, String userName);
   Future<void> startGame(String gameId,Map<String, String> assignments,int durationMinutes,);
   Stream<Game> watchGame(String gameId);
 

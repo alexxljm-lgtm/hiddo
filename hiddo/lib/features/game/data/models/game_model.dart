@@ -6,6 +6,7 @@ class GameModel extends Game {
   GameModel({
     required super.id,
     required super.players,
+    required super.playerNames,
     required super.lists,
     required super.assignments,
     required super.progress,
@@ -21,6 +22,7 @@ class GameModel extends Game {
     return GameModel(
       id: id,
       players: List<String>.from(data['players'] ?? []),
+      playerNames: Map<String, String>.from(data['playerNames'] ?? {}),
       lists: Map<String, dynamic>.from(data['lists'] ?? {}),
       assignments: Map<String, dynamic>.from(data['assignments'] ?? {}),
       progress: Map<String, dynamic>.from(data['progress'] ?? {}),
@@ -36,6 +38,7 @@ class GameModel extends Game {
   Map<String, dynamic> toFirestore() {
     return {
       'players': players,
+      'playerNames': playerNames,
       'lists': lists,
       'assignments': assignments,
       'progress': progress,
@@ -52,6 +55,7 @@ class GameModel extends Game {
     return GameModel(
       id: game.id,
       players: game.players,
+      playerNames: game.playerNames,
       lists: game.lists,
       assignments: game.assignments,
       progress: game.progress,
@@ -68,6 +72,7 @@ class GameModel extends Game {
     return Game(
       id: id,
       players: players,
+      playerNames: playerNames,
       lists: lists,
       assignments: assignments,
       progress: progress,

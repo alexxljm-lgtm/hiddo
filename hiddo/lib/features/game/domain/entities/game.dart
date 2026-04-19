@@ -3,6 +3,7 @@
 class Game {
   final String id;
   final List<String> players;
+  final Map<String, String> playerNames;
   final Map<String, dynamic> lists;
   final Map<String, dynamic> assignments;
   final Map<String, dynamic> progress;
@@ -16,6 +17,7 @@ class Game {
   Game({
     required this.id,
     required this.players,
+    required this.playerNames,
     required this.lists,
     required this.assignments,
     required this.progress,
@@ -31,6 +33,7 @@ class Game {
   List<Object?> get props => [
         id,
         players,
+        playerNames,
         lists,
         assignments,
         progress,
@@ -42,6 +45,7 @@ class Game {
 
   factory Game.fromFirestore(Map<String, dynamic> data, String id) {
     final players = List<String>.from(data['players'] ?? []);
+    final playerNames = Map<String, String>.from(data['playerNames'] ?? {});
 
     final lists = (data['lists'] as Map<String, dynamic>? ?? {}).map(
       (key, value) => MapEntry(key, List<String>.from(value)),
@@ -62,6 +66,7 @@ class Game {
     return Game(
       id: id,
       players: players,
+      playerNames: playerNames,
       lists: lists,
       assignments: assignments,
       progress: progress,
@@ -77,6 +82,7 @@ class Game {
   Map<String, dynamic> toFirestore() {
     return {
       'players': players,
+      'playerNames': playerNames,
       'lists': lists,
       'assignments': assignments,
       'progress': progress,
