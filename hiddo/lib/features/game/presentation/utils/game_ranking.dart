@@ -1,10 +1,12 @@
 class PlayerRankingItem {
   final String userId;
+  final String displayName;
   final int found;
   final int total;
 
   const PlayerRankingItem({
     required this.userId,
+    required this.displayName,
     required this.found,
     required this.total,
   });
@@ -15,6 +17,7 @@ List<PlayerRankingItem> buildRanking({
   required Map<String, dynamic> assignments,
   required Map<String, dynamic> lists,
   required Map<String, dynamic> progress,
+  required Map<String, dynamic> playerNames,
 }) {
   final ranking = <PlayerRankingItem>[];
 
@@ -30,6 +33,7 @@ List<PlayerRankingItem> buildRanking({
     ranking.add(
       PlayerRankingItem(
         userId: playerId,
+        displayName: playerNames[playerId] ?? playerId,
         found: playerProgress.length,
         total: assignedList.length,
       ),
