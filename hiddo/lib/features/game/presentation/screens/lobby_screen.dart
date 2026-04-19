@@ -14,6 +14,39 @@ class LobbyScreen extends ConsumerStatefulWidget {
 
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   int selectedDurationMinutes = 60;
+  Future<String?> _askPlayerName() async {
+    final nameController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("¿Cómo te llamas?"),
+        content: TextField(
+          controller: nameController,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            labelText: "Nombre de jugador",
+            hintText: "Ej: Laura",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final trimmedName = nameController.text.trim();
+              if (trimmedName.isEmpty) return;
+              Navigator.pop(context, trimmedName);
+            },
+            child: const Text("Continuar"),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +62,18 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
             ElevatedButton(
               onPressed: () async {
                 try {
+                  final playerName = await _askPlayerName();
+                  if (playerName == null || playerName.isEmpty) return;
+
                   // Crear usuario anónimo si no hay
                   User? user = FirebaseAuth.instance.currentUser;
                   if (user == null) {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
-                  final game = await datasource.createGame(user!.uid);
+                  final game = await datasource.createGame(user!.uid, playerName);
 
+                  if (!context.mounted) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -76,13 +113,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 if (gameId.isEmpty) return;
 
                 try {
+                  final playerName = await _askPlayerName();
+                  if (playerName == null || playerName.isEmpty) return;
+
                   User? user = FirebaseAuth.instance.currentUser;
                   if (user == null) {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
 
-                  await datasource.joinGame(gameId, user!.uid);
+                  await datasource.joinGame(gameId, user!.uid, playerName);
+                  if (!context.mounted) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
