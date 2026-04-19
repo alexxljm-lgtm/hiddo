@@ -4,6 +4,7 @@ import 'package:hiddo/features/game/presentation/screens/game_lobby_screen.dart'
 import 'package:hiddo/injection_container.dart';
 import '../../data/datasources/game_firestore_datasource.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key});
@@ -14,6 +15,56 @@ class LobbyScreen extends ConsumerStatefulWidget {
 
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   int selectedDurationMinutes = 60;
+  Future<String?> _askPlayerName() async {
+    final nameController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("¿Cómo te llamas?"),
+        content: TextField(
+          controller: nameController,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            labelText: "Nombre de jugador",
+            hintText: "Ej: Laura",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final trimmedName = nameController.text.trim();
+              if (trimmedName.isEmpty) return;
+              Navigator.pop(context, trimmedName);
+            },
+            child: const Text("Continuar"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _persistUserName(User user, String name) async {
+    try {
+      if ((user.displayName ?? '').trim() != name) {
+        await user.updateDisplayName(name);
+      }
+      await FirebaseAuth.instance.currentUser?.reload();
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'id': user.uid,
+        'displayName': name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {
+      // No bloqueamos crear/unirse por errores de perfil.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +80,20 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
             ElevatedButton(
               onPressed: () async {
                 try {
+                  final playerName = await _askPlayerName();
+                  if (playerName == null || playerName.isEmpty) return;
+
                   // Crear usuario anónimo si no hay
                   User? user = FirebaseAuth.instance.currentUser;
                   if (user == null) {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
-                  final game = await datasource.createGame(user!.uid);
+                  await _persistUserName(user!, playerName);
 
+                  final game = await datasource.createGame(user.uid);
+
+                  if (!context.mounted) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -76,13 +133,19 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 if (gameId.isEmpty) return;
 
                 try {
+                  final playerName = await _askPlayerName();
+                  if (playerName == null || playerName.isEmpty) return;
+
                   User? user = FirebaseAuth.instance.currentUser;
                   if (user == null) {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
 
-                  await datasource.joinGame(gameId, user!.uid);
+                  await _persistUserName(user!, playerName);
+
+                  await datasource.joinGame(gameId, user.uid);
+                  if (!context.mounted) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
