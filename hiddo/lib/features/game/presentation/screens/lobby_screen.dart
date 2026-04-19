@@ -4,6 +4,7 @@ import 'package:hiddo/features/game/presentation/screens/game_lobby_screen.dart'
 import 'package:hiddo/injection_container.dart';
 import '../../data/datasources/game_firestore_datasource.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key});
@@ -48,6 +49,23 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     );
   }
 
+  Future<void> _persistUserName(User user, String name) async {
+    try {
+      if ((user.displayName ?? '').trim() != name) {
+        await user.updateDisplayName(name);
+      }
+      await FirebaseAuth.instance.currentUser?.reload();
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'id': user.uid,
+        'displayName': name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {
+      // No bloqueamos crear/unirse por errores de perfil.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final datasource = ref.read(gameFirestoreDatasourceProvider);
@@ -71,7 +89,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
-                  final game = await datasource.createGame(user!.uid, playerName);
+                  await _persistUserName(user!, playerName);
+
+                  final game = await datasource.createGame(user.uid);
 
                   if (!context.mounted) return;
                   Navigator.push(
@@ -122,7 +142,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     user = cred.user;
                   }
 
-                  await datasource.joinGame(gameId, user!.uid, playerName);
+                  await _persistUserName(user!, playerName);
+
+                  await datasource.joinGame(gameId, user.uid);
                   if (!context.mounted) return;
                   Navigator.push(
                     context,
