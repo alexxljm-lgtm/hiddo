@@ -65,6 +65,7 @@ class GameModel extends Game {
       endsAt: game.endsAt,
       winnerId: game.winnerId,
       finishedAt: game.finishedAt,
+
     );
   }
 
@@ -72,7 +73,6 @@ class GameModel extends Game {
     return Game(
       id: id,
       players: players,
-      playerNames: playerNames,
       lists: lists,
       assignments: assignments,
       progress: progress,
@@ -82,6 +82,7 @@ class GameModel extends Game {
       endsAt: endsAt,
       winnerId: winnerId,
       finishedAt: finishedAt,
+      playerNames: playerNames,
     );
   }
 }

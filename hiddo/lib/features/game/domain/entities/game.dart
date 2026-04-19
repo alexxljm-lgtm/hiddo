@@ -26,7 +26,7 @@ class Game {
     this.startedAt,
     this.endsAt, 
     this.winnerId, 
-    this.finishedAt,
+    this.finishedAt, 
   });
 
   @override
@@ -45,7 +45,6 @@ class Game {
 
   factory Game.fromFirestore(Map<String, dynamic> data, String id) {
     final players = List<String>.from(data['players'] ?? []);
-    final playerNames = Map<String, String>.from(data['playerNames'] ?? {});
 
     final lists = (data['lists'] as Map<String, dynamic>? ?? {}).map(
       (key, value) => MapEntry(key, List<String>.from(value)),
@@ -62,7 +61,7 @@ class Game {
 
     final status = data['status'] as String? ?? 'waiting';
     
-
+    final playerNames = Map<String, String>.from(data['playerNames'] ?? {});
     return Game(
       id: id,
       players: players,
@@ -92,6 +91,7 @@ class Game {
       'endsAt': endsAt,
       'winnerId': winnerId,
       'finishedAt': finishedAt,
+
     };
   }
 }

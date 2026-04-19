@@ -19,11 +19,11 @@ Future<Game> createGame(String userId, String userName) async {
   final gameModel = GameModel(
     id: docRef.id,
     players: [userId],
-    playerNames: {userId: userName},
     lists: const {},
     assignments: const {},
     progress: const {},
-    status: 'waiting',
+    status: 'waiting', 
+    playerNames: {},
   );
 
   await docRef.set(gameModel.toFirestore());
@@ -110,6 +110,14 @@ Future<void> finishGame(String gameId, {String? winnerId}) async {
     'winnerId': winnerId,
     'finishedAt': DateTime.now().toIso8601String(),
   }, SetOptions(merge: true));
+}
+@override
+Future<void> setPlayerName(String gameId, String userId, String name) async {
+  final doc = firestore.collection('games').doc(gameId);
+
+  await doc.update({
+    'playerNames.$userId': name,
+  });
 }
 
 }

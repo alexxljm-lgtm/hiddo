@@ -33,6 +33,7 @@ class ResultsScreen extends ConsumerWidget {
             assignments: game.assignments,
             lists: game.lists,
             progress: game.progress,
+            playerNames: game.playerNames,
           );
           final winnerId = game.winnerId;
           final isCurrentUserWinner = winnerId == currentUserId;
@@ -76,9 +77,7 @@ class ResultsScreen extends ConsumerWidget {
                           return Card(
                             child: ListTile(
                               leading: Text('#${index + 1}'),
-                              title: Text(
-                                game.playerNames[player.userId] ?? player.userId,
-                              ),
+                              title: Text(player.displayName),
                               subtitle: Text(
                                 '${player.found}/${player.total} objetos encontrados',
                               ),
@@ -125,9 +124,7 @@ class ResultsScreen extends ConsumerWidget {
 
                 if (winnerId != null)
                 Text(
-                  isCurrentUserWinner
-                      ? '¡Has ganado!'
-                      : 'Ganador: ${game.playerNames[winnerId] ?? winnerId}',
+                  isCurrentUserWinner ? '¡Has ganado!' : 'Ganador: ${game.playerNames[winnerId] ?? winnerId}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,

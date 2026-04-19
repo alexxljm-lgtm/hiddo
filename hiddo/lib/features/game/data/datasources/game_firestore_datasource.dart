@@ -20,4 +20,6 @@ abstract class GameFirestoreDatasource {
     required String photoUrl,
   });
   Future<void> finishGame(String gameId, {String? winnerId});
+  Future<void> setPlayerName(String gameId, String userId, String name);
 }
+
