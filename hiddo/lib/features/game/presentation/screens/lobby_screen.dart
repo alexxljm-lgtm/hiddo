@@ -90,7 +90,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     user = cred.user;
                   }
                   final game = await datasource.createGame(user!.uid);
-                  _persistUserName(user, playerName);
+                  _persistUserName(user!, playerName);
 
                   if (!context.mounted) return;
                   Navigator.push(
@@ -142,7 +142,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   }
 
                   await datasource.joinGame(gameId, user!.uid);
-                  _persistUserName(user, playerName);
+                  _persistUserName(user!, playerName);
                   if (!context.mounted) return;
                   Navigator.push(
                     context,
