@@ -89,9 +89,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     final cred = await FirebaseAuth.instance.signInAnonymously();
                     user = cred.user;
                   }
-                  await _persistUserName(user!, playerName);
-
-                  final game = await datasource.createGame(user.uid);
+                  final game = await datasource.createGame(user!.uid);
+                  _persistUserName(user, playerName);
 
                   if (!context.mounted) return;
                   Navigator.push(
@@ -142,9 +141,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     user = cred.user;
                   }
 
-                  await _persistUserName(user!, playerName);
-
-                  await datasource.joinGame(gameId, user.uid);
+                  await datasource.joinGame(gameId, user!.uid);
+                  _persistUserName(user, playerName);
                   if (!context.mounted) return;
                   Navigator.push(
                     context,
