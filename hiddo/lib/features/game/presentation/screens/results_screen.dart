@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/game_provider.dart';
 import '../utils/game_ranking.dart';
+import '../utils/player_name_resolver.dart';
 
 
 class ResultsScreen extends ConsumerWidget {
@@ -76,7 +77,12 @@ class ResultsScreen extends ConsumerWidget {
                           return Card(
                             child: ListTile(
                               leading: Text('#${index + 1}'),
-                              title: Text(player.userId),
+                              title: FutureBuilder<String>(
+                                future: PlayerNameResolver.resolve(player.userId),
+                                builder: (context, snapshot) {
+                                  return Text(snapshot.data ?? player.userId);
+                                },
+                              ),
                               subtitle: Text(
                                 '${player.found}/${player.total} objetos encontrados',
                               ),
@@ -122,12 +128,22 @@ class ResultsScreen extends ConsumerWidget {
                 ),
 
                 if (winnerId != null)
-                Text(
-                  isCurrentUserWinner ? '¡Has ganado!' : 'Ganador: $winnerId',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                FutureBuilder<String>(
+                  future: winnerId == null
+                      ? Future.value('')
+                      : PlayerNameResolver.resolve(winnerId),
+                  builder: (context, snapshot) {
+                    final winnerLabel = snapshot.data ?? winnerId;
+                    return Text(
+                      isCurrentUserWinner
+                          ? '¡Has ganado!'
+                          : 'Ganador: $winnerLabel',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
                 )
               else
                 const Text(

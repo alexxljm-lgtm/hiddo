@@ -4,6 +4,7 @@ import 'package:hiddo/features/game/domain/usecases/generate_assignments.dart';
 import 'package:hiddo/features/game/presentation/screens/hunt_screen.dart';
 import 'package:hiddo/features/game/presentation/screens/list_submission_screen.dart';
 import 'package:hiddo/features/game/presentation/screens/results_screen.dart';
+import 'package:hiddo/features/game/presentation/utils/player_name_resolver.dart';
 import 'package:hiddo/injection_container.dart';
 import '../providers/game_provider.dart' hide gameStreamProvider;
 
@@ -68,10 +69,16 @@ class _GameLobbyScreenState extends ConsumerState<GameLobbyScreen> {
                   child: ListView.builder(
                     itemCount: game.players.length,
                     itemBuilder: (context, index) {
-                      final player = game.players[index];
-                      return ListTile(
-                        leading: const Icon(Icons.person),
-                        title: Text(player),
+                      final playerId = game.players[index];
+                      return FutureBuilder<String>(
+                        future: PlayerNameResolver.resolve(playerId),
+                        builder: (context, snapshot) {
+                          final playerName = snapshot.data ?? playerId;
+                          return ListTile(
+                            leading: const Icon(Icons.person),
+                            title: Text(playerName),
+                          );
+                        },
                       );
                     },
                   ),
