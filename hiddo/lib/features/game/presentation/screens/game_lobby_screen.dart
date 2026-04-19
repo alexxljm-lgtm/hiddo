@@ -7,6 +7,7 @@ import 'package:hiddo/features/game/presentation/screens/results_screen.dart';
 import 'package:hiddo/features/game/presentation/utils/player_name_resolver.dart';
 import 'package:hiddo/injection_container.dart';
 import '../providers/game_provider.dart' hide gameStreamProvider;
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GameLobbyScreen extends ConsumerStatefulWidget {
   final String gameId;
@@ -32,6 +33,49 @@ class _GameLobbyScreenState extends ConsumerState<GameLobbyScreen> {
         error: (e, _) => Center(child: Text("Error: $e")),
         data: (game) {
           // Navegar a HuntScreen si ya empezó la partida
+
+          final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+          final hasName = currentUserId != null &&
+          game.playerNames[currentUserId] != null &&
+          game.playerNames[currentUserId].toString().trim().isNotEmpty;
+
+                    if (!hasName && currentUserId != null) {
+            Future.microtask(() {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) {
+                  final controller = TextEditingController();
+                  return AlertDialog(
+                    title: const Text('Tu nombre'),
+                    content: TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        hintText: 'Escribe tu nombre',
+                      ),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final name = controller.text.trim();
+                          if (name.isEmpty) return;
+
+                          final datasource = ref.read(gameFirestoreDatasourceProvider);
+                          await datasource.setPlayerName(game.id, currentUserId, name);
+
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Guardar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            });
+          }
+
+
           if (game.status == "playing") {
             Future.microtask(() {
               Navigator.pushReplacement(

@@ -3,6 +3,7 @@
 class Game {
   final String id;
   final List<String> players;
+  final Map<String, String> playerNames;
   final Map<String, dynamic> lists;
   final Map<String, dynamic> assignments;
   final Map<String, dynamic> progress;
@@ -16,6 +17,7 @@ class Game {
   Game({
     required this.id,
     required this.players,
+    required this.playerNames,
     required this.lists,
     required this.assignments,
     required this.progress,
@@ -24,13 +26,14 @@ class Game {
     this.startedAt,
     this.endsAt, 
     this.winnerId, 
-    this.finishedAt,
+    this.finishedAt, 
   });
 
   @override
   List<Object?> get props => [
         id,
         players,
+        playerNames,
         lists,
         assignments,
         progress,
@@ -58,10 +61,11 @@ class Game {
 
     final status = data['status'] as String? ?? 'waiting';
     
-
+    final playerNames = Map<String, String>.from(data['playerNames'] ?? {});
     return Game(
       id: id,
       players: players,
+      playerNames: playerNames,
       lists: lists,
       assignments: assignments,
       progress: progress,
@@ -77,6 +81,7 @@ class Game {
   Map<String, dynamic> toFirestore() {
     return {
       'players': players,
+      'playerNames': playerNames,
       'lists': lists,
       'assignments': assignments,
       'progress': progress,
@@ -86,6 +91,7 @@ class Game {
       'endsAt': endsAt,
       'winnerId': winnerId,
       'finishedAt': finishedAt,
+
     };
   }
 }

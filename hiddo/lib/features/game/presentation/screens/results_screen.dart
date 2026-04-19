@@ -34,6 +34,7 @@ class ResultsScreen extends ConsumerWidget {
             assignments: game.assignments,
             lists: game.lists,
             progress: game.progress,
+            playerNames: game.playerNames,
           );
           final winnerId = game.winnerId;
           final isCurrentUserWinner = winnerId == currentUserId;
