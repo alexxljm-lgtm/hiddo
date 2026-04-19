@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../../injection_container.dart';
 import '../../../../core/services/photo_service.dart';
+import '../../../../injection_container.dart';
+import '../providers/game_provider.dart' hide gameStreamProvider;
 import 'results_screen.dart';
 
 class HuntScreen extends ConsumerWidget {
@@ -25,21 +26,24 @@ class HuntScreen extends ConsumerWidget {
         title: const Text("Hiddo - Caza"),
       ),
       body: gameAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (e, _) => Center(
-          child: Text("Error: $e"),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text("Error: $e")),
         data: (game) {
-          final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+          final currentUser = FirebaseAuth.instance.currentUser;
+
+          if (currentUser == null) {
+            return const Center(child: Text("Usuario no autenticado"));
+          }
+
+          final currentUserId = currentUser.uid;
           final assignedUserId = game.assignments[currentUserId];
 
           if (assignedUserId == null) {
-            return const Center(
-              child: Text("Sin asignación"),
-            );
+            return const Center(child: Text("Sin asignación"));
           }
+
+          final targetName =
+              game.playerNames[assignedUserId] ?? assignedUserId;
 
           final items = List<String>.from(game.lists[assignedUserId] ?? []);
           final foundMap =
@@ -48,6 +52,7 @@ class HuntScreen extends ConsumerWidget {
 
           final hasWon = items.isNotEmpty && foundItems.length == items.length;
 
+          // Si ganas → cerrar partida globalmente
           if (hasWon && game.status != 'finished') {
             Future.microtask(() async {
               final datasource = ref.read(gameFirestoreDatasourceProvider);
@@ -69,14 +74,13 @@ class HuntScreen extends ConsumerWidget {
           }
 
           return StreamBuilder<int>(
-            stream: Stream.periodic(
-              const Duration(seconds: 1),
-              (x) => x,
-            ),
+            stream: Stream.periodic(const Duration(seconds: 1), (x) => x),
             builder: (context, snapshot) {
               final remaining = getRemainingTime(game.endsAt);
-              final isTimeOver = remaining != null && remaining == Duration.zero;
+              final isTimeOver =
+                  remaining != null && remaining == Duration.zero;
 
+              // Si se acaba el tiempo → cerrar partida
               if (isTimeOver && game.status != 'finished') {
                 Future.microtask(() async {
                   final datasource = ref.read(gameFirestoreDatasourceProvider);
@@ -97,6 +101,16 @@ class HuntScreen extends ConsumerWidget {
               return Column(
                 children: [
                   const SizedBox(height: 12),
+
+                  // 👇 Nombre del objetivo
+                  Text(
+                    "Encuentra los objetos de $targetName",
+                    style: const TextStyle(fontSize: 18),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // 👇 Temporizador
                   Text(
                     remaining == null
                         ? "Tiempo restante: --:--:--"
@@ -106,7 +120,9 @@ class HuntScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+
                   const SizedBox(height: 12),
+
                   Expanded(
                     child: ListView.builder(
                       itemCount: items.length,
@@ -149,9 +165,8 @@ class HuntScreen extends ConsumerWidget {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
-                                          content: Text(
-                                            "Foto subida correctamente",
-                                          ),
+                                          content:
+                                              Text("Foto subida correctamente"),
                                         ),
                                       );
                                     }
@@ -160,9 +175,8 @@ class HuntScreen extends ConsumerWidget {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
-                                          content: Text(
-                                            "Error subiendo foto: $e",
-                                          ),
+                                          content:
+                                              Text("Error subiendo foto: $e"),
                                         ),
                                       );
                                     }
